@@ -1,0 +1,31 @@
+/* Add these styles to your CSS file */
+
+#transcript-container {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.interim-transcript {
+  color: #666;
+  font-style: italic;
+}
+
+.final-transcript {
+  margin: 5px 0;
+  padding: 5px;
+  background-color: #e9f7fe;
+  border-radius: 3px;
+}
+
+#stt-status {
+  color: #555;
+  font-size: 0.9em;
+}
+
+#performance-report-container pre {
+  font-family: monospace;
+  white-space: pre-wrap;
+  margin: 0;
+  color: #333;
+}
