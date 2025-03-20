@@ -249,6 +249,8 @@
         window.location.href = '/';
       }
     }
+    // End performance tracking when call ends
+performanceTracker.endCall();
 
     // Initialize when document is ready
     window.addEventListener('DOMContentLoaded', init);
