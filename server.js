@@ -1,145 +1,72 @@
-const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
-const path = require('path');
-const cors = require('cors');
+const express = require('express');  
+const http = require('http');  
+const socketIO = require('socket.io');  
+const path = require('path');  
+const cors = require('cors');  
 
-const app = express();
-const server = http.createServer(app);
+const app = express();  
+const server = http.createServer(app);  
 
-// Enable CORS
-app.use(cors({ origin: '*' }));
+// Enable CORS  
+app.use(cors({ origin: '*' }));  
 
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  },
-  transports: ["polling"]  // Use polling for Vercel compatibility
-});
+const io = socketIO(server, {  
+  cors: {  
+    origin: "*",  
+    methods: ["GET", "POST"]  
+  },  
+  transports: ["polling"] // Use polling for Vercel compatibility  
+});  
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files  
+app.use(express.static(path.join(__dirname, 'public')));  
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Routes  
+app.get('/', (req, res) => {  
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));  
+});  
 
-app.get('/interviewer', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'interviewer.html'));
-});
+app.get('/interviewer', (req, res) => {  
+  res.sendFile(path.join(__dirname, 'public', 'interviewer.html'));  
+});  
 
-app.get('/candidate', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'candidate.html'));
-});
+app.get('/candidate', (req, res) => {  
+  res.sendFile(path.join(__dirname, 'public', 'candidate.html'));  
+});  
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+// Socket.io connection handling  
+io.on('connection', (socket) => {  
+  console.log('A user connected:', socket.id);  
 
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
+  socket.on('join-room', (roomId, userId) => {  
+    socket.join(roomId);  
+    socket.to(roomId).emit('user-connected', userId);  
     
-    socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId);
-      console.log(`User ${userId} disconnected from room ${roomId}`);
-    });
-  });
+    socket.on('disconnect', () => {  
+      socket.to(roomId).emit('user-disconnected', userId);  
+      console.log(`User ${userId} disconnected from room ${roomId}`);  
+    });  
+  });  
 
-  // WebRTC signaling
-  socket.on('offer', (roomId, offer) => {
-    socket.to(roomId).emit('offer', offer, socket.id);
-  });
+  // WebRTC signaling  
+  socket.on('offer', (roomId, offer) => {  
+    socket.to(roomId).emit('offer', offer, socket.id);  
+  });  
 
-  const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
-const path = require('path');
-const cors = require('cors');
+  socket.on('answer', (roomId, answer) => {  
+    socket.to(roomId).emit('answer', answer, socket.id);  
+  });  
 
-const app = express();
-const server = http.createServer(app);
+  socket.on('ice-candidate', (roomId, candidate) => {  
+    socket.to(roomId).emit('ice-candidate', candidate, socket.id);  
+  });  
 
-// Enable CORS
-app.use(cors({ origin: '*' }));
+  socket.on('error', (error) => {  
+    console.error('Socket.IO error:', error);  
+  });  
+});  
 
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  },
-  transports: ["polling"]  // Use polling for Vercel compatibility
-});
-
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/interviewer', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'interviewer.html'));
-});
-
-app.get('/candidate', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'candidate.html'));
-});
-
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
-
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
-    
-    socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId);
-      console.log(`User ${userId} disconnected from room ${roomId}`);
-    });
-  });
-
-  // WebRTC signaling
-  socket.on('offer', (roomId, offer) => {
-    socket.to(roomId).emit('offer', offer, socket.id);
-  });
-
-  socket.on('answer', (roomId, answer) => {
-    socket.to(roomId).emit('answer', answer, socket.id);
-  });
-
-  socket.on('ice-candidate', (roomId, candidate) => {
-    socket.to(roomId).emit('ice-candidate', candidate, socket.id);
-  });
-
-  socket.on('error', (error) => {
-    console.error('Socket.IO error:', error);
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-  socket.on('answer', (roomId, answer) => {
-    socket.to(roomId).emit('answer', answer, socket.id);
-  });
-
-  socket.on('ice-candidate', (roomId, candidate) => {
-    socket.to(roomId).emit('ice-candidate', candidate, socket.id);
-  });
-
-  socket.on('error', (error) => {
-    console.error('Socket.IO error:', error);
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;  
+server.listen(PORT, () => {  
+  console.log(`Server running on port ${PORT}`);  
+});  
